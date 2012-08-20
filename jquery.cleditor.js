@@ -155,6 +155,7 @@
   // Test for ie
   ie = $.browser.msie,
   ie6 = /msie\s6/i.test(navigator.userAgent),
+  olderie9 = ie && (!document.documentMode || document.documentMode < 9),
 
   // Test for iPhone/iTouch/iPad
   iOS = /iphone|ipad|ipod/i.test(navigator.userAgent),
@@ -874,10 +875,14 @@
     });
 
     // Enable the toolbar buttons as the user types or clicks
-    $doc.click(hidePopups)
-      .bind("keyup mouseup", function() {
+    $doc.click(hidePopups).bind("mouseup", function() {
         refreshButtons(editor);
-      });
+    });
+    if (!ie || !olderie9){
+    	$doc.click(hidePopups).bind("keyup", function() {
+    		refreshButtons(editor);
+    	});
+    }
 
     // Show the textarea for iPhone/iTouch/iPad or
     // the iframe when design mode is supported.
@@ -961,7 +966,7 @@
           command = "backcolor";
         // IE does not support inserthtml, so it's always enabled
         if (!ie || command != "inserthtml") {
-          try {enabled = queryObj.queryCommandEnabled(command);}
+          try {enabled = queryObj.queryCommandEnabled(command);} //very slow in ie8 and older
           catch (err) {enabled = false;}
         }
       }
